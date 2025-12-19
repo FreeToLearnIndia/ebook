@@ -160,22 +160,22 @@ const pageFlip = new St.PageFlip(container, {
         );*/
         const rect = viewport.convertToViewportRectangle(ann.rect);
 
-        const xMin = Math.min(rect[0], rect[2]);
+        /*const xMin = Math.min(rect[0], rect[2]);
         const xMax = Math.max(rect[0], rect[2]);
         const yMin = Math.min(rect[1], rect[3]);
-        const yMax = Math.max(rect[1], rect[3]);
+        const yMax = Math.max(rect[1], rect[3]);*/
   
-        /*const left = Math.min(rect[0], rect[2]);
+        const left = Math.min(rect[0], rect[2]);
         const top = Math.min(rect[1], rect[3]);
         const width = Math.abs(rect[0] - rect[2]);
-        const height = Math.abs(rect[1] - rect[3]);*/
+        const height = Math.abs(rect[1] - rect[3]);
 
-        const left = xMin;
-        const width = xMax - xMin;
+        /*const left = xMin;
+        const width = xMax - xMin;*/
 
         /* 🔴 THIS IS THE IMPORTANT PART */
-        const top = viewport.height - yMax;
-        const height = yMax - yMin;
+        /*const top = viewport.height - yMax;
+        const height = yMax - yMin;*/
           
         Object.assign(link.style, {
           position: 'absolute',
