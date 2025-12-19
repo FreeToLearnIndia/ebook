@@ -1,111 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>E-Book</title>
+<title>Ebook</title>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="turn.min.js"></script>
+<!-- PDF.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<!-- PageFlip -->
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/page-flip.browser.min.js"></script>
 
 <style>
 html, body {
   margin: 0;
   padding: 0;
-  background: #1f1f1f;
   height: 100%;
-  overflow: hidden;
-}
-
-#book-wrapper {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background: #2b2b2b;
 }
 
 #book {
-  width: 90vw;
-  height: 90vh;
-}
-
-.page {
-  background: white;
-  overflow: hidden;
-}
-
-.page canvas {
   width: 100%;
-  height: 100%;
+  height: 100vh;
 }
 </style>
 </head>
 
 <body>
 
-<div id="book-wrapper">
-  <div id="book"></div>
-</div>
+<div id="book"></div>
 
 <script>
+/* REQUIRED */
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 
-const url = 'ebook.pdf';
-const book = $('#book');
+const container = document.getElementById('book');
 
-pdfjsLib.getDocument(url).promise.then(async pdf => {
+const pageFlip = new St.PageFlip(container, {
+  width: 600,
+  height: 800,
+  size: "stretch",
+  showCover: true,
+  mobileScrollSupport: false
+});
 
-  // 1️⃣ Render ALL pages first
+(async () => {
+  const pdf = await pdfjsLib.getDocument('ebook.pdf').promise;
+  const pages = [];
+
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
+    const viewport = page.getViewport({ scale: 2 });
 
-    const viewport = page.getViewport({ scale: 1.5 });
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
     canvas.width = viewport.width;
     canvas.height = viewport.height;
 
-    const pageDiv = document.createElement('div');
-    pageDiv.className = 'page';
-    pageDiv.appendChild(canvas);
-    book.append(pageDiv);
-
-    await page.render({
-      canvasContext: ctx,
-      viewport: viewport
-    }).promise;
+    await page.render({ canvasContext: ctx, viewport }).promise;
+    pages.push(canvas);
   }
 
-  // 2️⃣ ENSURE minimum 2 pages (Turn.js rule)
-  if (book.children('.page').length === 1) {
-    const blank = document.createElement('div');
-    blank.className = 'page';
-    book.prepend(blank);
-  }
-
-  // 3️⃣ Initialize Turn.js ONCE, after DOM is ready
-  setTimeout(() => {
-    const bw = book.width();
-    const bh = book.height();
-    const isMobile = window.innerWidth < 768;
-
-    book.turn({
-      width: bw,
-      height: bh,
-      autoCenter: true,
-      display: isMobile ? 'single' : 'double',
-      gradients: true,
-      elevation: 50
-    });
-  }, 200);
-
-});
+  pageFlip.loadFromHTML(pages);
+})();
 </script>
-
 
 </body>
 </html>
