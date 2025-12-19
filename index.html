@@ -109,7 +109,7 @@ const pageFlip = new St.PageFlip(container, {
   const pdf = await pdfjsLib.getDocument('ebook.pdf').promise;
   const pages = [];
 
-  for (let i = 1; i <= pdf.numPages; i++) {
+  /*for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const viewport = page.getViewport({ scale: 2 });
 
@@ -121,7 +121,67 @@ const pageFlip = new St.PageFlip(container, {
 
     await page.render({ canvasContext: ctx, viewport }).promise;
     pages.push(canvas);
+  }*/
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({ scale: 2 });
+  
+    // Page wrapper
+    const pageWrapper = document.createElement('div');
+    pageWrapper.style.position = 'relative';
+    pageWrapper.style.width = viewport.width + 'px';
+    pageWrapper.style.height = viewport.height + 'px';
+  
+    // Canvas
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+  
+    pageWrapper.appendChild(canvas);
+  
+    await page.render({
+      canvasContext: ctx,
+      viewport
+    }).promise;
+  
+    // 🔗 LINK ANNOTATIONS
+    const annotations = await page.getAnnotations();
+  
+    annotations.forEach(ann => {
+      if (ann.subtype === 'Link' && ann.url) {
+        const link = document.createElement('a');
+        link.href = ann.url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+  
+        const rect = pdfjsLib.Util.normalizeRect(
+          viewport.convertToViewportRectangle(ann.rect)
+        );
+  
+        const left = Math.min(rect[0], rect[2]);
+        const top = Math.min(rect[1], rect[3]);
+        const width = Math.abs(rect[0] - rect[2]);
+        const height = Math.abs(rect[1] - rect[3]);
+  
+        Object.assign(link.style, {
+          position: 'absolute',
+          left: left + 'px',
+          top: top + 'px',
+          width: width + 'px',
+          height: height + 'px',
+          cursor: 'pointer',
+          background: 'rgba(0,0,0,0)',  // invisible
+          zIndex: 10
+        });
+  
+        pageWrapper.appendChild(link);
+      }
+    });
+  
+    pages.push(pageWrapper);
   }
+
 
   pageFlip.loadFromHTML(pages);
 
