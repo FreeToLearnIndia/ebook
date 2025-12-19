@@ -53,6 +53,11 @@ pdfjsLib.getDocument(url).promise.then(pdf => {
       page.render({ canvasContext: ctx, viewport }).promise.then(() => {
         book.append(canvas);
 
+        if (!$.fn.turn) {
+          alert("Turn.js failed to load");
+          return;
+        }
+        
         if (num === pdf.numPages) {
           book.turn({
             autoCenter: true,
