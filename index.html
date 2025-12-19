@@ -11,18 +11,33 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
 <style>
-body {
+html, body {
   margin: 0;
-  background: #2b2b2b;
+  padding: 0;
+  background: #1f1f1f;
+  height: 100%;
+  overflow: hidden;
+}
+
+#book-wrapper {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #book {
-  width: 100%;
-  height: 100vh;
-  margin: auto;
+  width: 90vw;
+  height: 90vh;
 }
 
-canvas {
+.page {
+  background: white;
+  overflow: hidden;
+}
+
+.page canvas {
   width: 100%;
   height: 100%;
 }
@@ -31,10 +46,11 @@ canvas {
 
 <body>
 
-<div id="book"></div>
+<div id="book-wrapper">
+  <div id="book"></div>
+</div>
 
 <script>
-/* ✅ REQUIRED: tell PDF.js where worker is */
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 
 const url = 'ebook.pdf';
@@ -42,9 +58,10 @@ const book = $('#book');
 
 pdfjsLib.getDocument(url).promise.then(pdf => {
 
-  let renderedPages = 0;
+  let rendered = 0;
+  const total = pdf.numPages;
 
-  for (let i = 1; i <= pdf.numPages; i++) {
+  for (let i = 1; i <= total; i++) {
     pdf.getPage(i).then(page => {
 
       const viewport = page.getViewport({ scale: 1.5 });
@@ -54,26 +71,23 @@ pdfjsLib.getDocument(url).promise.then(pdf => {
       canvas.width = viewport.width;
       canvas.height = viewport.height;
 
+      const pageDiv = document.createElement('div');
+      pageDiv.className = 'page';
+      pageDiv.appendChild(canvas);
+
       page.render({
         canvasContext: ctx,
         viewport: viewport
       }).promise.then(() => {
 
-        book.append(canvas);
-        renderedPages++;
+        book.append(pageDiv);
+        rendered++;
 
-        /* ✅ Initialize Turn.js ONLY after last page */
-        if (renderedPages === pdf.numPages) {
-
-          if (!$.fn.turn) {
-            alert("Turn.js not loaded");
-            return;
-          }
-
+        if (rendered === total) {
           book.turn({
-            autoCenter: true,
-            width: viewport.width * 2,
-            height: viewport.height
+            width: $('#book').width(),
+            height: $('#book').height(),
+            autoCenter: true
           });
         }
       });
