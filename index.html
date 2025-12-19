@@ -84,10 +84,19 @@ pdfjsLib.getDocument(url).promise.then(pdf => {
         rendered++;
 
         if (rendered === total) {
-          book.turn({
+          /*book.turn({
             width: $('#book').width(),
             height: $('#book').height(),
             autoCenter: true
+          });*/
+          const bw = document.getElementById('book').clientWidth;
+          const bh = document.getElementById('book').clientHeight;
+          
+          book.turn({
+            width: bw,
+            height: bh,
+            autoCenter: true,
+            display: 'double'
           });
         }
       });
