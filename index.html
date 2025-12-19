@@ -100,7 +100,6 @@ const pageFlip = new St.PageFlip(container, {
   showCover: true,
   mobileScrollSupport: false,
   useMouseEvents: !isMobile,
-  disableFlipByClick: false,
   maxShadowOpacity: 0.5
 });
 
@@ -127,7 +126,7 @@ const pageFlip = new St.PageFlip(container, {
 
   /* 🔒 Single-page on mobile, double on desktop */
   pageFlip.updateFromHtml(pages);
-  pageFlip.setDisplay(isMobile ? 'single' : 'double');
+  //pageFlip.setDisplay(isMobile ? 'single' : 'double');
 
   loader.style.display = 'none';
   updatePageNumber();
