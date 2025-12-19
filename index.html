@@ -90,17 +90,18 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 const container = document.getElementById('book');
 const loader = document.getElementById('loader');
 const pageIndicator = document.getElementById('pageIndicator');
-const isMobile = window.innerWidth < 768;
+//const isMobile = window.innerWidth < 768;
+const isMobile = window.matchMedia("(max-width: 768px)").matches;
 
 /* 📘 PageFlip init */
 const pageFlip = new St.PageFlip(container, {
-  width: 600,
-  height: 800,
-  size: "stretch",
+  width: isMobile ? 420 : 600,
+  height: isMobile ? 620 : 800,
+  size: "fixed",
   showCover: true,
   mobileScrollSupport: false,
   useMouseEvents: !isMobile,
-  maxShadowOpacity: 0.5
+  maxShadowOpacity: 0.4
 });
 
 /* 📄 Load PDF */
