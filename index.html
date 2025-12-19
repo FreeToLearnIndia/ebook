@@ -155,9 +155,10 @@ const pageFlip = new St.PageFlip(container, {
         link.target = '_blank';
         link.rel = 'noopener noreferrer';
   
-        const rect = pdfjsLib.Util.normalizeRect(
+        /*const rect = pdfjsLib.Util.normalizeRect(
           viewport.convertToViewportRectangle(ann.rect)
-        );
+        );*/
+        const rect = viewport.convertToViewportRectangle(ann.rect);
   
         const left = Math.min(rect[0], rect[2]);
         const top = Math.min(rect[1], rect[3]);
