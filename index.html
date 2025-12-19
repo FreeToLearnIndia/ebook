@@ -91,12 +91,14 @@ pdfjsLib.getDocument(url).promise.then(pdf => {
           });*/
           const bw = document.getElementById('book').clientWidth;
           const bh = document.getElementById('book').clientHeight;
+
+          const isMobile = window.innerWidth < 768;
           
           book.turn({
             width: bw,
             height: bh,
             autoCenter: true,
-            display: 'double'
+            display: isMobile ? 'single' : 'double'
           });
         }
       });
