@@ -37,12 +37,15 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdf.worker.min.js';
 
 const container = document.getElementById('book');
 
+const isMobile = window.innerWidth < 768;
 const pageFlip = new St.PageFlip(container, {
   width: 600,
   height: 800,
   size: "stretch",
   showCover: true,
-  mobileScrollSupport: false
+  mobileScrollSupport: false,
+  useMouseEvents: !isMobile,
+  swipeDistance: 30
 });
 
 (async () => {
